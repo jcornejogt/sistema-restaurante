@@ -1,0 +1,25 @@
+# Entorno virtual
+venv/
+
+# Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Compilados de PyInstaller
+build/
+dist/
+*.spec
+
+# Base de datos (contiene datos de prueba, no se versiona)
+database/restaurante.db
+
+# Recibos generados
+recibos/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
