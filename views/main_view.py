@@ -6,6 +6,7 @@ from views.products_view import ProductsView
 from views.sales_view import SalesView
 from views.tables_view import TablesView
 from views.order_view import OrderView
+from views.users_view import UsersView
 
 
 class MainView(ctk.CTkFrame):
@@ -274,11 +275,15 @@ class MainView(ctk.CTkFrame):
 
         self.limpiar_contenido()
 
-        ctk.CTkLabel(
+        vista = UsersView(
             self.contenido,
-            text="👤 Usuarios\nPróximamente",
-            font=("Arial", 28)
-        ).pack(expand=True)
+            usuario_actual=self.usuario_actual
+        )
+
+        vista.pack(
+            fill="both",
+            expand=True
+        )
 
 
 
