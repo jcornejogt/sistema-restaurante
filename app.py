@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from brand import CREAM, apply_theme
 
 from database.database import Base, engine
 
@@ -17,6 +18,7 @@ from views.main_view import MainView
 
 
 Base.metadata.create_all(bind=engine)
+apply_theme()
 
 UserController.crear_admin_por_defecto()
 
@@ -29,11 +31,14 @@ class App(ctk.CTk):
 
         super().__init__()
 
+        self.configure(fg_color=CREAM)
+
         self.title("Sistema Restaurante")
 
         self.geometry("1200x700")
 
-        self.resizable(False, False)
+        self.resizable(True, True)
+        self.minsize(900, 600)
 
         self.mostrar_login()
 

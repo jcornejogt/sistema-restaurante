@@ -9,6 +9,33 @@ from models.product import Product
 class SaleController:
 
     @staticmethod
+    def listar():
+
+        session = SessionLocal()
+
+        try:
+            return session.query(Sale).order_by(Sale.fecha.desc()).all()
+        finally:
+            session.close()
+
+    @staticmethod
+    def resumen_hoy():
+
+        from datetime import datetime, time
+
+        inicio = datetime.combine(datetime.now().date(), time.min)
+        session = SessionLocal()
+
+        try:
+            ventas = session.query(Sale).filter(Sale.fecha >= inicio).all()
+            return {
+                "cantidad": len(ventas),
+                "total": sum(venta.total for venta in ventas)
+            }
+        finally:
+            session.close()
+
+    @staticmethod
     def cobrar(pedido):
 
         session = SessionLocal()

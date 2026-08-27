@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 
 from controllers.product_controller import ProductController
 from database.sales_model import SalesModel
+from brand import CREAM, GOLD, GOLD_HOVER, SUCCESS, SUCCESS_HOVER
 
 
 class SalesView(ctk.CTkFrame):
@@ -11,10 +12,12 @@ class SalesView(ctk.CTkFrame):
         super().__init__(master)
 
         self.carrito = []
+        self.configure(fg_color=CREAM)
 
         titulo = ctk.CTkLabel(
             self,
             text="🛒 Ventas",
+            text_color=GOLD,
             font=("Arial", 28, "bold")
         )
         titulo.pack(pady=20)
@@ -66,6 +69,14 @@ class SalesView(ctk.CTkFrame):
             command=self.agregar_producto
         ).pack(pady=10)
 
+        cantidad_frame = ctk.CTkFrame(izquierda, fg_color="transparent")
+        cantidad_frame.pack(pady=(0, 10))
+        ctk.CTkLabel(cantidad_frame, text="Cantidad:").pack(side="left", padx=5)
+        self.cantidad_entry = ctk.CTkEntry(cantidad_frame, width=70)
+        self.cantidad_entry.insert(0, "1")
+        self.cantidad_entry.pack(side="left")
+        self.cantidad_entry.bind("<Return>", lambda event: self.agregar_producto())
+
         derecha = ctk.CTkFrame(contenedor)
         derecha.pack(
             side="right",
@@ -107,7 +118,8 @@ class SalesView(ctk.CTkFrame):
         ctk.CTkButton(
             derecha,
             text="Finalizar Venta",
-            fg_color="green",
+            fg_color=SUCCESS,
+            hover_color=SUCCESS_HOVER,
             command=self.finalizar
         ).pack(pady=10)
 
@@ -119,7 +131,7 @@ class SalesView(ctk.CTkFrame):
         for fila in self.productos.get_children():
             self.productos.delete(fila)
 
-        productos = ProductController.listar()
+        productos = ProductController.listar_disponibles()
 
         for producto in productos:
             self.productos.insert(
@@ -147,8 +159,40 @@ class SalesView(ctk.CTkFrame):
         datos = self.productos.item(seleccionado)["values"]
 
 
+        try:
+            cantidad = int(self.cantidad_entry.get())
+        except ValueError:
+            messagebox.showerror("Venta", "La cantidad debe ser un número entero.")
+            return
+
+        if cantidad <= 0:
+            messagebox.showwarning("Venta", "La cantidad debe ser mayor que cero.")
+            return
+
         precio = float(datos[2])
-        cantidad = 1
+
+        producto_existente = next(
+            (item for item in self.carrito if item["id"] == datos[0]),
+            None
+        )
+
+        producto_actual = ProductController.obtener_por_id(int(datos[0]))
+        cantidad_carrito = producto_existente["cantidad"] if producto_existente else 0
+        if producto_actual is None or cantidad_carrito + cantidad > producto_actual.stock:
+            disponible = producto_actual.stock if producto_actual else 0
+            messagebox.showwarning(
+                "Venta",
+                f"Stock insuficiente. Disponible: {disponible}."
+            )
+            return
+
+        if producto_existente:
+            producto_existente["cantidad"] += cantidad
+            producto_existente["subtotal"] = (
+                producto_existente["precio"] * producto_existente["cantidad"]
+            )
+            self.actualizar_carrito()
+            return
 
 
         producto = {
@@ -224,10 +268,14 @@ class SalesView(ctk.CTkFrame):
         )
 
 
-        SalesModel.guardar(
-            total,
-            self.carrito
-        )
+        try:
+            SalesModel.guardar(
+                total,
+                self.carrito
+            )
+        except Exception as e:
+            messagebox.showerror("No se pudo registrar la venta", str(e))
+            return
 
 
         messagebox.showinfo(

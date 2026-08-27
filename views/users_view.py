@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk, messagebox
 
 from controllers.user_controller import UserController
+from brand import CREAM, GOLD
 
 
 ROLES = ["Admin", "Mesero"]
@@ -13,11 +14,13 @@ class UsersView(ctk.CTkFrame):
         super().__init__(master)
 
         self.usuario_actual = usuario_actual
+        self.configure(fg_color=CREAM)
         self.user_id_seleccionado = None
 
         titulo = ctk.CTkLabel(
             self,
             text="👤 Usuarios",
+            text_color=GOLD,
             font=("Arial", 28, "bold")
         )
         titulo.pack(pady=20)

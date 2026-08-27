@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk, messagebox
 
 from controllers.product_controller import ProductController
+from brand import CREAM, DANGER, DANGER_HOVER, GOLD, GOLD_HOVER
 
 
 class ProductsView(ctk.CTkFrame):
@@ -10,10 +11,12 @@ class ProductsView(ctk.CTkFrame):
         super().__init__(master)
 
         self.producto_id = None
+        self.configure(fg_color=CREAM)
 
         titulo = ctk.CTkLabel(
             self,
             text="🍔 Productos",
+            text_color=GOLD,
             font=("Arial", 28, "bold")
         )
         titulo.pack(pady=20)
@@ -80,8 +83,8 @@ class ProductsView(ctk.CTkFrame):
         self.btn_eliminar = ctk.CTkButton(
             botones,
             text="Eliminar",
-            fg_color="red",
-            hover_color="#990000",
+            fg_color=DANGER,
+            hover_color=DANGER_HOVER,
             command=self.eliminar_producto
         )
 

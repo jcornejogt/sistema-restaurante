@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 
 from controllers.order_controller import OrderController
 from controllers.product_controller import ProductController
+from brand import CREAM, GOLD
 from controllers.sale_controller import SaleController
 from views.recibo_view import ReciboView
 
@@ -13,6 +14,7 @@ class OrderView(ctk.CTkFrame):
         super().__init__(master)
 
         self.mesa_id = mesa_id
+        self.configure(fg_color=CREAM)
         self.volver_callback = volver_callback
         self.cuenta = None
 

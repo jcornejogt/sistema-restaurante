@@ -2,6 +2,7 @@ from database.database import SessionLocal
 
 from models.sale import Sale
 from models.sale_detail import SaleDetail
+from models.product import Product
 
 
 class SalesModel:
@@ -27,6 +28,18 @@ class SalesModel:
             # Guardar detalle de cada producto
             for producto in productos:
 
+                registro = db.query(Product).filter(
+                    Product.id == producto["id"]
+                ).first()
+
+                if registro is None:
+                    raise Exception("Producto no encontrado.")
+
+                if registro.stock < producto["cantidad"]:
+                    raise Exception(
+                        f"No hay suficiente stock de '{registro.nombre}'."
+                    )
+
                 detalle = SaleDetail(
 
                     sale_id=venta.id,
@@ -42,6 +55,7 @@ class SalesModel:
                 )
 
                 db.add(detalle)
+                registro.stock -= producto["cantidad"]
 
 
             db.commit()

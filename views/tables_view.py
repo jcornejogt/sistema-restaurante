@@ -4,6 +4,7 @@ from tkinter import messagebox
 from database.database import SessionLocal
 from models.table import Table
 from controllers.order_controller import OrderController
+from brand import CREAM, GOLD
 
 
 class TablesView(ctk.CTkFrame):
@@ -12,6 +13,7 @@ class TablesView(ctk.CTkFrame):
         super().__init__(master)
 
         self.abrir_cuenta_callback = abrir_cuenta_callback
+        self.configure(fg_color=CREAM)
 
         self.crear_vista()
 
@@ -22,6 +24,7 @@ class TablesView(ctk.CTkFrame):
         titulo = ctk.CTkLabel(
             self,
             text="🪑 Mesas",
+            text_color=GOLD,
             font=("Arial", 30, "bold")
         )
         titulo.pack(pady=20)

@@ -7,6 +7,9 @@ from views.sales_view import SalesView
 from views.tables_view import TablesView
 from views.order_view import OrderView
 from views.users_view import UsersView
+from views.inventory_view import InventoryView
+from views.reports_view import ReportsView
+from brand import CREAM, GOLD, GOLD_HOVER, MUTED, NAVY, NAVY_LIGHT, WHITE, logo_image
 
 
 class MainView(ctk.CTkFrame):
@@ -36,7 +39,8 @@ class MainView(ctk.CTkFrame):
 
         self.menu = ctk.CTkFrame(
             self,
-            width=220
+            width=220,
+            fg_color=NAVY
         )
 
         self.menu.pack(
@@ -47,13 +51,21 @@ class MainView(ctk.CTkFrame):
 
         titulo = ctk.CTkLabel(
             self.menu,
-            text="🍔 Comida App",
+            text="",
+            image=logo_image(92, 92),
             font=("Arial", 22, "bold")
         )
 
         titulo.pack(
-            pady=30
+            pady=(22, 5)
         )
+
+        ctk.CTkLabel(
+            self.menu,
+            text="LA BAJONA",
+            text_color=GOLD,
+            font=("Arial", 16, "bold")
+        ).pack(pady=(0, 22))
 
 
         rol_actual = self.usuario_actual["rol"]
@@ -88,6 +100,9 @@ class MainView(ctk.CTkFrame):
                 text=texto,
                 width=180,
                 height=40,
+                fg_color=NAVY_LIGHT,
+                hover_color=GOLD_HOVER,
+                text_color=WHITE,
                 command=comando
             ).pack(
                 pady=8,
@@ -106,13 +121,15 @@ class MainView(ctk.CTkFrame):
             padx=10,
             pady=10
         )
+        self.contenido.configure(fg_color=CREAM)
 
 
     def crear_barra_estado(self):
 
         self.estado = ctk.CTkFrame(
             self,
-            height=35
+            height=35,
+            fg_color=NAVY
         )
 
         self.estado.pack(
@@ -123,7 +140,8 @@ class MainView(ctk.CTkFrame):
 
         self.usuario_label = ctk.CTkLabel(
             self.estado,
-            text=f"👤 {self.usuario_actual['nombre']} ({self.usuario_actual['rol']})"
+            text=f"👤 {self.usuario_actual['nombre']} ({self.usuario_actual['rol']})",
+            text_color=MUTED
         )
 
         self.usuario_label.pack(
@@ -134,7 +152,8 @@ class MainView(ctk.CTkFrame):
 
         self.hora_label = ctk.CTkLabel(
             self.estado,
-            text=""
+            text="",
+            text_color=MUTED
         )
 
         self.hora_label.pack(
@@ -148,7 +167,9 @@ class MainView(ctk.CTkFrame):
             text="Cerrar sesión",
             width=110,
             height=24,
-            fg_color="gray",
+            fg_color=GOLD,
+            hover_color=GOLD_HOVER,
+            text_color=NAVY,
             command=self.cerrar_sesion
         ).pack(
             side="right",
@@ -251,11 +272,8 @@ class MainView(ctk.CTkFrame):
 
         self.limpiar_contenido()
 
-        ctk.CTkLabel(
-            self.contenido,
-            text="📦 Inventario\nPróximamente",
-            font=("Arial", 28)
-        ).pack(expand=True)
+        vista = InventoryView(self.contenido)
+        vista.pack(fill="both", expand=True)
 
 
 
@@ -263,11 +281,8 @@ class MainView(ctk.CTkFrame):
 
         self.limpiar_contenido()
 
-        ctk.CTkLabel(
-            self.contenido,
-            text="📊 Reportes\nPróximamente",
-            font=("Arial", 28)
-        ).pack(expand=True)
+        vista = ReportsView(self.contenido)
+        vista.pack(fill="both", expand=True)
 
 
 

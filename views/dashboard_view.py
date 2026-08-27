@@ -1,6 +1,8 @@
 import customtkinter as ctk
 
 from controllers.product_controller import ProductController
+from controllers.sale_controller import SaleController
+from brand import CREAM, NAVY, GOLD
 
 
 class DashboardView(ctk.CTkFrame):
@@ -12,9 +14,12 @@ class DashboardView(ctk.CTkFrame):
 
     def crear_dashboard(self):
 
+        self.configure(fg_color=CREAM)
+
         titulo = ctk.CTkLabel(
             self,
             text="🏠 Dashboard",
+            text_color=NAVY,
             font=("Arial", 30, "bold")
         )
 
@@ -23,6 +28,7 @@ class DashboardView(ctk.CTkFrame):
         subtitulo = ctk.CTkLabel(
             self,
             text="Bienvenido al Sistema Restaurante",
+            text_color=NAVY,
             font=("Arial", 18)
         )
 
@@ -42,17 +48,22 @@ class DashboardView(ctk.CTkFrame):
         self.card_productos.pack(side="left", padx=10)
 
         # Tarjeta Ventas
+        resumen = SaleController.resumen_hoy()
+
         self.crear_tarjeta(
             tarjetas,
             "🛒 Ventas Hoy",
-            "0"
+            f"{resumen['cantidad']} / C$ {resumen['total']:.2f}"
         ).pack(side="left", padx=10)
 
         # Tarjeta Clientes
         self.crear_tarjeta(
             tarjetas,
-            "👥 Clientes",
-            "0"
+            "📦 Stock bajo",
+            str(sum(
+                1 for producto in ProductController.listar()
+                if producto.stock <= 5
+            ))
         ).pack(side="left", padx=10)
 
     def crear_tarjeta(self, master, titulo, valor):
