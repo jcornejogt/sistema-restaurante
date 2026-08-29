@@ -244,10 +244,18 @@ class OrderController:
                 OrderDetail.order_id == order_id
             ).all()
 
+            mesa = db.query(Table).filter(
+                Table.id == cuenta.mesa_id
+            ).first()
+
             if len(detalles) == 0:
-                raise Exception(
-                    "No se puede cerrar una cuenta sin productos."
-                )
+                cuenta.estado = "Cerrada"
+
+                if mesa:
+                    mesa.estado = "Libre"
+
+                db.commit()
+                return None
 
             # Validar stock de TODOS los productos antes de tocar nada
             for item in detalles:
@@ -291,10 +299,6 @@ class OrderController:
                 db.add(detalle_venta)
 
                 producto.stock -= item.cantidad
-
-            mesa = db.query(Table).filter(
-                Table.id == cuenta.mesa_id
-            ).first()
 
             cuenta.estado = "Cerrada"
             cuenta.sale_id = venta.id

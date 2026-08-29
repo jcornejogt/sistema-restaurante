@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
 from database.database import SessionLocal
@@ -34,6 +37,72 @@ class SaleController:
             }
         finally:
             session.close()
+
+    @staticmethod
+    def reporte_diario(fecha_inicio=None, fecha_fin=None):
+        """
+        Devuelve un resumen agrupado por fecha para mostrar totales por día.
+        Si se envían fechas, filtra el rango indicado.
+        """
+
+        session = SessionLocal()
+
+        try:
+            query = session.query(
+                func.date(Sale.fecha).label("fecha"),
+                func.count(Sale.id).label("cantidad_ventas"),
+                func.sum(Sale.total).label("total_dia")
+            )
+
+            if fecha_inicio is not None:
+                query = query.filter(func.date(Sale.fecha) >= fecha_inicio)
+
+            if fecha_fin is not None:
+                query = query.filter(func.date(Sale.fecha) <= fecha_fin)
+
+            filas = (
+                query.group_by(func.date(Sale.fecha))
+                .order_by(func.date(Sale.fecha).asc())
+                .all()
+            )
+
+            resultado = []
+            for fecha, cantidad, total_dia in filas:
+                resultado.append({
+                    "fecha": str(fecha),
+                    "cantidad_ventas": int(cantidad or 0),
+                    "total_dia": float(total_dia or 0.0)
+                })
+
+            return resultado
+
+        finally:
+            session.close()
+
+    @staticmethod
+    def reporte_por_rango(fecha_inicio, fecha_fin):
+        if fecha_inicio is None and fecha_fin is None:
+            return SaleController.reporte_diario()
+
+        if fecha_inicio is None:
+            fecha_inicio = fecha_fin
+
+        if fecha_fin is None:
+            fecha_fin = fecha_inicio
+
+        return SaleController.reporte_diario(fecha_inicio, fecha_fin)
+
+    @staticmethod
+    def reporte_ultimos_dias(dias=7):
+        fecha_fin = datetime.now().date()
+        fecha_inicio = fecha_fin - timedelta(days=max(dias - 1, 0))
+        return SaleController.reporte_por_rango(fecha_inicio, fecha_fin)
+
+    @staticmethod
+    def reporte_mes_actual():
+        hoy = datetime.now().date()
+        fecha_inicio = hoy.replace(day=1)
+        return SaleController.reporte_por_rango(fecha_inicio, hoy)
 
     @staticmethod
     def cobrar(pedido):

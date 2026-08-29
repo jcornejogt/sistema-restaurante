@@ -284,10 +284,11 @@ class OrderView(ctk.CTkFrame):
             )
             return
 
-        venta = SaleController.obtener_venta(venta_id)
+        if venta_id is not None:
+            venta = SaleController.obtener_venta(venta_id)
 
-        if venta:
-            ReciboView(self.winfo_toplevel(), venta)
+            if venta:
+                ReciboView(self.winfo_toplevel(), venta)
 
         self.volver()
 
