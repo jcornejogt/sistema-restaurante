@@ -9,6 +9,9 @@ from views.order_view import OrderView
 from views.users_view import UsersView
 from views.inventory_view import InventoryView
 from views.reports_view import ReportsView
+from views.customers_view import CustomersView
+from views.kitchen_view import KitchenView
+from views.expenses_view import ExpensesView
 from brand import CREAM, GOLD, GOLD_HOVER, MUTED, NAVY, NAVY_LIGHT, WHITE, logo_image
 
 
@@ -53,7 +56,7 @@ class MainView(ctk.CTkFrame):
             self.menu,
             text="",
             image=logo_image(92, 92),
-            font=("Arial", 22, "bold")
+            font=("Arial", 24, "bold")
         )
 
         titulo.pack(
@@ -64,7 +67,7 @@ class MainView(ctk.CTkFrame):
             self.menu,
             text="LA BAJONA",
             text_color=GOLD,
-            font=("Arial", 16, "bold")
+            font=("Arial", 18, "bold")
         ).pack(pady=(0, 22))
 
 
@@ -81,9 +84,15 @@ class MainView(ctk.CTkFrame):
 
             ("🛒 Ventas", self.ventas, None),
 
+            ("🍳 Cocina", self.cocina, None),
+
+            ("💸 Salidas", self.salidas, ["Admin"]),
+
             ("📦 Inventario", self.inventario, ["Admin"]),
 
-            ("📊 Reportes", self.reportes, ["Admin"]),
+            ("� Clientes", self.clientes, None),
+
+            ("�📊 Reportes", self.reportes, ["Admin"]),
 
             ("👤 Usuarios", self.usuarios, ["Admin"])
 
@@ -100,6 +109,7 @@ class MainView(ctk.CTkFrame):
                 text=texto,
                 width=180,
                 height=40,
+                font=("Arial", 16, "bold"),
                 fg_color=NAVY_LIGHT,
                 hover_color=GOLD_HOVER,
                 text_color=WHITE,
@@ -267,12 +277,37 @@ class MainView(ctk.CTkFrame):
         )
 
 
+    def cocina(self):
+
+        self.limpiar_contenido()
+
+        vista = KitchenView(self.contenido)
+        vista.pack(fill="both", expand=True)
+
+
+    def salidas(self):
+
+        self.limpiar_contenido()
+
+        vista = ExpensesView(self.contenido)
+        vista.pack(fill="both", expand=True)
+
+
 
     def inventario(self):
 
         self.limpiar_contenido()
 
         vista = InventoryView(self.contenido)
+        vista.pack(fill="both", expand=True)
+
+
+
+    def clientes(self):
+
+        self.limpiar_contenido()
+
+        vista = CustomersView(self.contenido)
         vista.pack(fill="both", expand=True)
 
 

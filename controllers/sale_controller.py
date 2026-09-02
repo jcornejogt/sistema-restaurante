@@ -105,11 +105,16 @@ class SaleController:
         return SaleController.reporte_por_rango(fecha_inicio, hoy)
 
     @staticmethod
-    def cobrar(pedido):
+    def cobrar(pedido, metodo_pago="Efectivo", customer_id=None):
 
         session = SessionLocal()
 
         try:
+            metodo = (metodo_pago or "Efectivo").strip().title()
+            if metodo not in {"Efectivo", "Tarjeta", "Transferencia", "Credito"}:
+                raise ValueError("Método de pago inválido.")
+            if metodo == "Credito" and not customer_id:
+                raise ValueError("Debe seleccionar un cliente para vender a crédito.")
 
             total = 0
 
@@ -129,7 +134,7 @@ class SaleController:
 
                 total += producto.precio * item["cantidad"]
 
-            venta = Sale(total=total)
+            venta = Sale(total=total, metodo_pago=metodo, customer_id=customer_id)
             session.add(venta)
             session.flush()
 
@@ -150,6 +155,10 @@ class SaleController:
                 session.add(detalle)
 
                 producto.stock -= item["cantidad"]
+
+            if metodo == "Credito":
+                from controllers.customer_controller import CustomerController
+                CustomerController._agregar_credito_db(session, customer_id, total, f"Venta #{venta.id}")
 
             session.commit()
 

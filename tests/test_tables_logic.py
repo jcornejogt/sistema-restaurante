@@ -6,6 +6,9 @@ from models.sale import Sale
 from models.table import Table
 from controllers.order_controller import OrderController
 from controllers.sale_controller import SaleController
+from database.sales_model import SalesModel
+from models.product import Product
+from views.sales_view import SalesView
 from views.tables_view import TablesView
 
 
@@ -104,3 +107,40 @@ def test_reporte_por_rango_filtra_ventas_entre_fechas():
         assert reporte[1]["fecha"] == "2026-08-29"
     finally:
         db.close()
+
+
+def test_sales_model_returns_sale_id_and_receipt_data():
+    Base.metadata.create_all(bind=engine)
+
+    db = SessionLocal()
+    try:
+        db.query(Sale).delete()
+        db.query(Product).delete()
+        db.commit()
+
+        producto = Product(nombre="Café", precio=60.0, stock=10)
+        db.add(producto)
+        db.commit()
+        db.refresh(producto)
+
+        sale_id = SalesModel.guardar(120.0, [{"id": producto.id, "cantidad": 2, "precio": 60.0, "subtotal": 120.0}])
+
+        assert type(sale_id) is int
+        assert sale_id > 0
+        venta = SaleController.obtener_venta(sale_id)
+        assert venta is not None
+        assert venta["total"] == 120.0
+        assert venta["items"][0]["producto_nombre"] == "Café"
+    finally:
+        db.close()
+
+
+def test_quitar_producto_del_carrito_removes_selected_item():
+    carrito = [
+        {"id": 1, "nombre": "Cafe", "precio": 50.0, "cantidad": 1, "subtotal": 50.0},
+        {"id": 2, "nombre": "Torta", "precio": 80.0, "cantidad": 1, "subtotal": 80.0},
+    ]
+
+    resultado = SalesView.quitar_producto_del_carrito(carrito, 1)
+
+    assert [item["id"] for item in resultado] == [2]

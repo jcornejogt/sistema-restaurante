@@ -27,14 +27,14 @@ class OrderView(ctk.CTkFrame):
         titulo = ctk.CTkLabel(
             self,
             text="🧾 Cuenta de Mesa",
-            font=("Arial", 28, "bold")
+            font=("Arial", 30, "bold")
         )
         titulo.pack(pady=(15, 5))
 
         self.info_label = ctk.CTkLabel(
             self,
             text="",
-            font=("Arial", 16)
+            font=("Arial", 18)
         )
         self.info_label.pack(pady=5)
 
@@ -47,7 +47,7 @@ class OrderView(ctk.CTkFrame):
         ctk.CTkLabel(
             izquierda,
             text="Productos disponibles",
-            font=("Arial", 16, "bold")
+            font=("Arial", 18, "bold")
         ).pack(pady=10)
 
         self.productos = ttk.Treeview(
@@ -90,7 +90,7 @@ class OrderView(ctk.CTkFrame):
         ctk.CTkLabel(
             derecha,
             text="Detalle de la cuenta",
-            font=("Arial", 16, "bold")
+            font=("Arial", 18, "bold")
         ).pack(pady=10)
 
         self.detalle = ttk.Treeview(
@@ -117,7 +117,7 @@ class OrderView(ctk.CTkFrame):
         self.total_label = ctk.CTkLabel(
             derecha,
             text="Total: C$ 0.00",
-            font=("Arial", 22, "bold")
+            font=("Arial", 24, "bold")
         )
         self.total_label.pack(pady=10)
 

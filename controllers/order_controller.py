@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import joinedload
 
 from database.database import SessionLocal
@@ -5,6 +7,7 @@ from database.database import SessionLocal
 from models.order import Order
 from models.order_detail import OrderDetail
 from models.product import Product
+from models.kitchen_order import KitchenOrder
 from models.table import Table
 from models.sale import Sale
 from models.sale_detail import SaleDetail
@@ -217,7 +220,7 @@ class OrderController:
             db.close()
 
     @staticmethod
-    def cerrar_cuenta(order_id):
+    def cerrar_cuenta(order_id, metodo_pago="Efectivo", customer_id=None):
         """
         Cierra la cuenta de una mesa, generando una venta real:
         valida stock, crea Sale + SaleDetail, descuenta inventario,
@@ -275,8 +278,13 @@ class OrderController:
                         f"Disponible: {producto.stock}, requerido: {item.cantidad}."
                     )
 
-            # Crear la venta
-            venta = Sale(total=cuenta.total)
+            metodo = (metodo_pago or "Efectivo").strip().title()
+            if metodo not in {"Efectivo", "Tarjeta", "Transferencia", "Credito"}:
+                raise ValueError("Método de pago inválido.")
+            if metodo == "Credito" and customer_id is None:
+                raise ValueError("Debe seleccionar un cliente para ventas a crédito.")
+
+            venta = Sale(total=cuenta.total, metodo_pago=metodo, customer_id=customer_id)
 
             db.add(venta)
             db.flush()
@@ -299,6 +307,20 @@ class OrderController:
                 db.add(detalle_venta)
 
                 producto.stock -= item.cantidad
+
+            if metodo == "Credito":
+                from controllers.customer_controller import CustomerController
+                CustomerController._agregar_credito_db(db, customer_id, cuenta.total, f"Venta #{venta.id}")
+
+            comanda = db.query(KitchenOrder).filter(
+                KitchenOrder.sale_id == venta.id
+            ).first()
+            if comanda is None:
+                comanda = KitchenOrder(sale_id=venta.id)
+                db.add(comanda)
+            else:
+                comanda.fecha_creacion = datetime.now()
+                comanda.estado = "Pendiente"
 
             cuenta.estado = "Cerrada"
             cuenta.sale_id = venta.id

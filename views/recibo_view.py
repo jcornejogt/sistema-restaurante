@@ -40,19 +40,19 @@ class ReciboView(ctk.CTkToplevel):
         ctk.CTkLabel(
             self,
             text="🍽️ Sistema Restaurante",
-            font=("Arial", 18, "bold")
+            font=("Arial", 20, "bold")
         ).pack(pady=(15, 0))
 
         ctk.CTkLabel(
             self,
             text=f"Recibo #{self.venta['id']}",
-            font=("Arial", 14)
+            font=("Arial", 16)
         ).pack()
 
         ctk.CTkLabel(
             self,
             text=self.venta["fecha"].strftime("%d/%m/%Y %H:%M"),
-            font=("Arial", 12)
+            font=("Arial", 14)
         ).pack(pady=(0, 10))
 
         caja = ctk.CTkTextbox(

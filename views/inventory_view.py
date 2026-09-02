@@ -19,7 +19,7 @@ class InventoryView(ctk.CTkFrame):
             self,
             text="📦 Inventario",
             text_color=GOLD,
-            font=("Arial", 28, "bold")
+            font=("Arial", 30, "bold")
         ).pack(pady=20)
 
         formulario = ctk.CTkFrame(self)
@@ -37,7 +37,7 @@ class InventoryView(ctk.CTkFrame):
 
         ctk.CTkButton(
             formulario,
-            text="Limpiar",
+            text="Limpiar",                             
             fg_color="gray",
             command=self.limpiar
         ).pack(side="left", padx=10)

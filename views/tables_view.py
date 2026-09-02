@@ -31,7 +31,7 @@ class TablesView(ctk.CTkFrame):
             self,
             text="🪑 Mesas",
             text_color=GOLD,
-            font=("Arial", 30, "bold")
+            font=("Arial", 32, "bold")
         )
         titulo.pack(pady=20)
 
@@ -83,13 +83,13 @@ class TablesView(ctk.CTkFrame):
                 ctk.CTkLabel(
                     tarjeta,
                     text=f"🪑 Mesa {mesa.numero}",
-                    font=("Arial", 22, "bold")
+                    font=("Arial", 24, "bold")
                 ).pack(pady=15)
 
                 ctk.CTkLabel(
                     tarjeta,
                     text=f"Estado: {mesa.estado}",
-                    font=("Arial", 16)
+                    font=("Arial", 18)
                 ).pack()
 
                 texto_boton = "Ver cuenta" if mesa.estado == "Ocupada" else "Abrir mesa"

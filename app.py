@@ -10,6 +10,11 @@ from models.table import Table
 from models.order import Order
 from models.order_detail import OrderDetail
 from models.user import User
+from models.customer import Customer
+from models.credit_account import CreditAccount
+from models.credit_movement import CreditMovement
+from models.kitchen_order import KitchenOrder
+from models.expense import Expense
 
 from controllers.user_controller import UserController
 
@@ -34,13 +39,19 @@ class App(ctk.CTk):
         self.configure(fg_color=CREAM)
 
         self.title("Sistema Restaurante")
-
         self.geometry("1200x700")
-
         self.resizable(True, True)
-        self.minsize(900, 600)
+        self.state("zoomed")
 
         self.mostrar_login()
+
+    def _fijar_ventana_maximizada(self):
+        self.update_idletasks()
+        ancho = self.winfo_screenwidth()
+        alto = self.winfo_screenheight()
+        self.geometry(f"{ancho}x{alto}+0+0")
+        self.state("zoomed")
+        self.update_idletasks()
 
     def limpiar_ventana(self):
 
@@ -50,6 +61,7 @@ class App(ctk.CTk):
     def mostrar_login(self):
 
         self.limpiar_ventana()
+        self.state("zoomed")
 
         LoginView(
             self,
@@ -59,6 +71,7 @@ class App(ctk.CTk):
     def mostrar_main(self, usuario):
 
         self.limpiar_ventana()
+        self.state("zoomed")
 
         vista = MainView(
             self,

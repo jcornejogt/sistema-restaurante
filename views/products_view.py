@@ -17,7 +17,7 @@ class ProductsView(ctk.CTkFrame):
             self,
             text="🍔 Productos",
             text_color=GOLD,
-            font=("Arial", 28, "bold")
+            font=("Arial", 30, "bold")
         )
         titulo.pack(pady=20)
 

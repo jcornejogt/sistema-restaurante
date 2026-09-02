@@ -21,7 +21,7 @@ class UsersView(ctk.CTkFrame):
             self,
             text="👤 Usuarios",
             text_color=GOLD,
-            font=("Arial", 28, "bold")
+            font=("Arial", 30, "bold")
         )
         titulo.pack(pady=20)
 
@@ -65,7 +65,7 @@ class UsersView(ctk.CTkFrame):
         self.password_hint = ctk.CTkLabel(
             formulario,
             text="",
-            font=("Arial", 11),
+            font=("Arial", 13),
             text_color="gray"
         )
         self.password_hint.grid(row=3, column=1, sticky="w")

@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk, messagebox
 
 from controllers.sale_controller import SaleController
+from controllers.expense_controller import ExpenseController
 from brand import CREAM, GOLD
 
 
@@ -18,7 +19,7 @@ class ReportsView(ctk.CTkFrame):
             self,
             text="📊 Reportes de ventas",
             text_color=GOLD,
-            font=("Arial", 28, "bold")
+            font=("Arial", 30, "bold")
         ).pack(pady=20)
 
         resumen = ctk.CTkFrame(self, fg_color="transparent")
@@ -29,6 +30,8 @@ class ReportsView(ctk.CTkFrame):
         self.cantidad_label.pack(side="left", padx=10)
         self.total_neto_label = ctk.CTkLabel(resumen, text="Total neto: C$ 0.00")
         self.total_neto_label.pack(side="left", padx=10)
+        self.total_salidas_label = ctk.CTkLabel(resumen, text="Total de salidas: C$ 0.00")
+        self.total_salidas_label.pack(side="left", padx=10)
         ctk.CTkButton(
             resumen,
             text="Actualizar",
@@ -82,7 +85,7 @@ class ReportsView(ctk.CTkFrame):
             self,
             text="📅 Reporte diario",
             text_color=GOLD,
-            font=("Arial", 20, "bold")
+            font=("Arial", 22, "bold")
         ).pack(pady=(10, 5))
 
         self.tabla_diaria = ttk.Treeview(
@@ -97,6 +100,26 @@ class ReportsView(ctk.CTkFrame):
         self.tabla_diaria.column("ventas", width=120, anchor="center")
         self.tabla_diaria.column("total_dia", width=180, anchor="e")
         self.tabla_diaria.pack(fill="x", expand=False, padx=25, pady=(0, 20))
+
+        ctk.CTkLabel(
+            self,
+            text="💸 Reporte de salidas",
+            text_color=GOLD,
+            font=("Arial", 22, "bold")
+        ).pack(pady=(10, 5))
+
+        self.tabla_salidas = ttk.Treeview(
+            self,
+            columns=("fecha", "salidas", "total_salidas"),
+            show="headings"
+        )
+        self.tabla_salidas.heading("fecha", text="Fecha")
+        self.tabla_salidas.heading("salidas", text="Salidas")
+        self.tabla_salidas.heading("total_salidas", text="Total de salidas")
+        self.tabla_salidas.column("fecha", width=170, anchor="center")
+        self.tabla_salidas.column("salidas", width=120, anchor="center")
+        self.tabla_salidas.column("total_salidas", width=180, anchor="e")
+        self.tabla_salidas.pack(fill="x", expand=False, padx=25, pady=(0, 20))
 
         ctk.CTkButton(
             self,
@@ -169,6 +192,41 @@ class ReportsView(ctk.CTkFrame):
                 reporte = SaleController.reporte_por_rango(inicio_date, fin_date)
 
         self._render_reporte_diario(reporte)
+        self._render_reporte_salidas(self._obtener_reporte_salidas())
+
+    def _obtener_reporte_salidas(self):
+        seleccion = self.filtro_var.get()
+        if seleccion == "Últimos 7 días":
+            return ExpenseController.reporte_ultimos_dias(7)
+        if seleccion == "Mes actual":
+            return ExpenseController.reporte_mes_actual()
+
+        inicio = self.fecha_inicio_entry.get().strip()
+        fin = self.fecha_fin_entry.get().strip()
+        if not inicio or not fin:
+            return ExpenseController.reporte_diario()
+
+        from datetime import datetime
+        inicio_date = datetime.strptime(inicio, "%Y-%m-%d").date()
+        fin_date = datetime.strptime(fin, "%Y-%m-%d").date()
+        return ExpenseController.reporte_diario(inicio_date, fin_date)
+
+    def _render_reporte_salidas(self, reporte):
+        for fila in self.tabla_salidas.get_children():
+            self.tabla_salidas.delete(fila)
+
+        total_salidas = 0.0
+        for item in reporte:
+            total_salidas += item["total_dia"]
+            self.tabla_salidas.insert("", "end", values=(
+                item["fecha"],
+                item["cantidad_salidas"],
+                f"C$ {item['total_dia']:.2f}"
+            ))
+
+        self.total_salidas_label.configure(
+            text=f"Total de salidas: C$ {total_salidas:.2f}"
+        )
 
     def _render_reporte_diario(self, reporte):
         for fila in self.tabla_diaria.get_children():

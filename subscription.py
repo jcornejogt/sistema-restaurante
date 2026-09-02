@@ -1,7 +1,7 @@
 from datetime import date
 
 
-SUBSCRIPTION_EXPIRES = date(2026, 8, 30)
+SUBSCRIPTION_EXPIRES = date(2026, 12, 31)
 
 
 def expiration_text():

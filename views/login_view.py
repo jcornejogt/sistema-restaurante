@@ -38,20 +38,20 @@ class LoginView(ctk.CTkFrame):
             ctk.CTkLabel(contenedor, text="", image=imagen_logo).pack(pady=(18, 0))
         else:
             ctk.CTkLabel(contenedor, text="LA BAJONA", text_color=GOLD,
-                         font=("Arial", 25, "bold")).pack(pady=(30, 0))
+                         font=("Arial", 27, "bold")).pack(pady=(30, 0))
 
         ctk.CTkLabel(
             contenedor,
             text="La Bajona",
             text_color=GOLD,
-            font=("Arial", 22, "bold")
+            font=("Arial", 24, "bold")
         ).pack(pady=(0, 25))
 
         ctk.CTkLabel(
             contenedor,
             text=f"Su suscripción actual vence el {expiration_text()}",
             text_color=MUTED,
-            font=("Arial", 12)
+            font=("Arial", 14)
         ).pack(pady=(0, 18))
 
         ctk.CTkLabel(
