@@ -1,5 +1,22 @@
+import os
+import sys
+
 import customtkinter as ctk
+from dotenv import load_dotenv
 from brand import CREAM, apply_theme
+
+if getattr(sys, "frozen", False):
+    APP_DIR = os.path.dirname(sys.executable)
+else:
+    APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
+load_dotenv(os.path.join(APP_DIR, ".env.local"))
+
+if not os.getenv("DATABASE_URL"):
+    raise RuntimeError(
+        f"No se encontró DATABASE_URL en {os.path.join(APP_DIR, '.env.local')}. "
+        "La aplicación no puede iniciar usando SQLite por accidente."
+    )
 
 from database.database import Base, engine
 

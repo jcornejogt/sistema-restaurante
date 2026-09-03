@@ -15,10 +15,21 @@ def get_base_dir():
 
 
 BASE_DIR = get_base_dir()
-DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'restaurante.db')}"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    f"sqlite:///{os.path.join(BASE_DIR, 'restaurante.db')}"
+)
+
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 
 def ensure_database_schema():
+    if not DATABASE_URL.startswith("sqlite://"):
+        return
+
     db_path = DATABASE_URL.replace("sqlite:///", "", 1)
     if not os.path.exists(db_path):
         return
@@ -40,7 +51,11 @@ def ensure_database_schema():
         conn.close()
 
 
-engine = create_engine(DATABASE_URL, echo=False)
+engine_options = {"echo": False, "pool_pre_ping": True}
+if DATABASE_URL.startswith("sqlite://"):
+    engine_options["connect_args"] = {"check_same_thread": False}
+
+engine = create_engine(DATABASE_URL, **engine_options)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 ensure_database_schema()

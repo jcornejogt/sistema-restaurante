@@ -5,6 +5,10 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
+.pytest_cache/
+
+# Dependencias de Node/Neon CLI
+node_modules/
 
 # Compilados de PyInstaller
 build/
@@ -23,3 +27,5 @@ Thumbs.db
 
 # VS Code
 .vscode/
+.neon
+.env.local
